@@ -1,8 +1,8 @@
 import codecs
 import chardet
 # import pandas as pd
-from logger import Logger
-from logger import LogLevel
+from utils.logger import Logger
+from utils.logger import LogLevel
 import openpyxl
 
 class TextReplacer:

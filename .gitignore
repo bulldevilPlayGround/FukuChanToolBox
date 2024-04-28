@@ -10,4 +10,6 @@ TEST
 *.bat
 *.log
 *.spec
+*.mp4
 test*
+

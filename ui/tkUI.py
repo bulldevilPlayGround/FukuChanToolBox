@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-from replacer import TextReplacer
+from text.replacer import TextReplacer
 
 #创建一个接口类，是fileSelectItem的抽象类
 class fileAbstractItem:
