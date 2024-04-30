@@ -5,6 +5,7 @@ import ffmpeg
 class videoHandler:
     def __init__(self):
         self.logger = Logger()
+        self.gpu_acceleration = False
 
     def add_suffix(self, filename, suffix):
         self.logger.log(LogLevel.DEBUG, f"为{filename}添加后缀{suffix}")
@@ -20,8 +21,16 @@ class videoHandler:
         input_file = ffmpeg.input(filename)
         audio = input_file.audio.filter('atempo', speed)
         video = input_file.video.filter('setpts', 'PTS/' + str(speed))
-        # ffmpeg.output(audio, video, output_file, progress=lambda p: self.progress_callback(p, filename)).run()
-        ffmpeg.output(audio, video, output_file).run()
+        # 启用GPU加速
+        if self.gpu_acceleration:
+            ffmpeg_options = {
+            '-hwaccel': 'cuda',  # 使用NVIDIA CUDA加速
+            '-c:v': 'h264_nvenc',  # 使用NVIDIA NVENC编码器
+            '-preset': 'fast',  # 设置编码预设为快速编码
+            }
+            ffmpeg.output(audio, video, output_file, options=ffmpeg_options).run()
+        else:
+            ffmpeg.output(audio, video, output_file).run()
         self.logger.log(LogLevel.DEBUG, f"转换完成，输出文件为{output_file}")
 
     def change_speed_all(self, input_files, speed):
