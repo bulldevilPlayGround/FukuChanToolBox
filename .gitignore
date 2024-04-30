@@ -13,3 +13,6 @@ TEST
 *.mp4
 test*
 
+build
+dist
+progress.txt
