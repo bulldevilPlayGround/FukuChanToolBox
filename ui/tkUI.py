@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from text.replacer import TextReplacer
+from video.videoHandle import videoHandler
 import ui.items as items
 
 class tkTabFrame(ttk.Frame):
@@ -33,6 +34,21 @@ class tkTextReplacerTab(tkTabFrame):
         self.replacer.replace_words()
         tk.messagebox.showinfo("完成提示", "替换完成。请查看输出文件: {}".format(output_file))
 
+class tkVideoSpeederTab(tkTabFrame):
+    def create_widgets(self):
+        self.video_speeder = videoHandler()
+        self.inputFilesSelectItem = items.fileListSelectItem(self, "输入文件: ", "浏览")
+        self.inputSpeedSelectItem = items.textSelectItem(self, "速度")
+
+        self.run_button = tk.Button(self, text="运行", command=self.run_video_speeder)
+        #使用grid布局，把run_button放在最下面,右对齐
+        self.run_button.grid(row=items.fileAbstractItem.current_row+1, column=1, padx=5, pady=5, sticky='e')
+
+    def run_video_speeder(self):
+        input_files = self.inputFilesSelectItem.entry.get("1.0", tk.END).splitlines()
+        speed = float(self.inputSpeedSelectItem.entry.get())  # Convert speed to float
+        self.video_speeder.change_speed_all(input_files, speed)
+
 class tkUIInstance(tk.Tk):
     def __init__(self, title):
         super().__init__()
@@ -42,3 +58,7 @@ class tkUIInstance(tk.Tk):
         self.notebook.pack(fill='both', expand=True)
         # 创建文字处理选项卡
         self.textReplacerTab = tkTextReplacerTab(self.notebook)
+        self.videoSpeederTab = tkVideoSpeederTab(self.notebook)
+        # 添加选项卡
+        self.notebook.add(self.textReplacerTab, text="文本处理")
+        self.notebook.add(self.videoSpeederTab, text="视频变速")

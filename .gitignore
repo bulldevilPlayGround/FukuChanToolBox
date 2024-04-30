@@ -16,3 +16,4 @@ test*
 build
 dist
 progress.txt
+*.7z
