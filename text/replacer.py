@@ -33,7 +33,8 @@ class TextReplacer:
         except Exception as e:
             raise ValueError(f"解析{self.input_file}文件编码失败：{str(e)}")
 
-    # def load_rule_listx(self):
+    # pandas version of load_rule_list
+    # def load_rule_list(self):
     #     try:
     #         df = pd.read_excel(self.rule_list_file)
     #         for _, row in df.iterrows():
@@ -71,7 +72,7 @@ class TextReplacer:
         except Exception as e:
             encoding = 'utf-8'
         try:
-            with codecs.open(self.output_file, 'w', encoding=encoding, errors='ignore') as output:
+            with codecs.open(self.output_file, 'w', encoding='utf-8', errors='ignore') as output:
                 with codecs.open(self.input_file, 'r', encoding=encoding, errors='replace') as input:
                     content = input.read()
                     for old_word, new_word in self.rule_list.items():
