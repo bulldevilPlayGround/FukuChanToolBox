@@ -2,5 +2,5 @@ from ui.tkUI import tkUIInstance
 
 
 if __name__ == "__main__":
-    app = tkUIInstance('生产力工具')
+    app = tkUIInstance('福福工具箱')
     app.mainloop()
