@@ -9,7 +9,6 @@ class TextReplacer:
     def __init__(self):
         self.rule_list = {}
         self.logger = Logger()
-        self.logger.log(LogLevel.INFO, "初始化文本替换器")
 
     def update_files(self, input_file: str, output_file: str, rule_list_file: str):
         if not input_file:
