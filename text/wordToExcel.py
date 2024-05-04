@@ -1,6 +1,3 @@
-from doctest import debug
-from os import times
-from tabnanny import verbose
 import docx2txt
 import openpyxl
 import re

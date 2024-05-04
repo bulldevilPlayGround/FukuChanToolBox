@@ -1,0 +1,5 @@
+chardet
+openpyxl
+ffmpeg
+docx2txt
+
