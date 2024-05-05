@@ -1,3 +1,4 @@
+from doctest import debug
 from os import times
 from tabnanny import verbose
 import docx2txt
@@ -5,8 +6,8 @@ import openpyxl
 import re
 # Regular expression patterns
 EMPTY_LINE_PATTERN = r'^$'
-SECTION_PATTERN_TITLE = r'^\d+$'
-TIMESTAMP_PATTERN = r'^((?:\d+[:：\.])?\d{2}[:：\.]\d{2})\s*(\w*)'  #时间戳可能没有小时，只有分钟
+SECTION_PATTERN_TITLE = r'^[\s\t]*\d+[\s\t]*$'
+TIMESTAMP_PATTERN = r'^((?:\d+[:：\.])?\d{2}[:：\.]\d{2})\s*([\S\s]*)'  #时间戳可能没有小时，只有分钟
 TAIL_PATTERN = r'^-(?:\d+[:：\.])?\d{2}[:：\.]\d{2}$'
 """
 doc_dict format:
@@ -47,24 +48,28 @@ class wordToExcel:
 
     def __load_word_doc__(self, file):
         text = docx2txt.process(file)
+        #去除text里的制表符和空行
+        text = re.sub(r'[\t\r]', '', text)
+        text = re.sub(r'\n+', '\n', text)
         self.lines = text.split('\n')
 
     def __parse_title_from_lines__(self):
-        if self.lines[0] == '1' and self.lines[2].startswith('00.00'):
-            self.title = ''
-        else:
+        #如果第三行是时间戳正文，那么第一行是标题
+        if re.match(TIMESTAMP_PATTERN, self.lines[2]):
             self.title = self.lines[0]
+        else:
+            self.title = ''
 
     def __structure_doc__(self):
         sec_str = ""
-        i = 0 if self.title == '' else 2
+        i = 0 if self.title == '' else 1
         while i < len(self.lines):
             debugLog(self.verbose, f"IN: line {i}: {self.lines[i]}")
             #找到章节的标题，开始第一个循环
             if re.match(SECTION_PATTERN_TITLE, self.lines[i]):
                 sec_str = self.lines[i]
                 self.doc_dict[sec_str] = sec_list = []
-                debugLog(self.verbose, f"sec_str in line {i}:{self.lines[i]}")
+                debugLog(self.verbose, f"sec_str in line {i}: {self.lines[i]}")
                 i += 1
                  #跳到下一行，遍历当前章节，结束条件是没有到达最后，以及下一行不是章节标题
                 while i < len(self.lines):
@@ -72,6 +77,7 @@ class wordToExcel:
                     #按照标准的'timestamp text'格式，找到时间戳，加入到sec_list
                     line_data = re.search(TIMESTAMP_PATTERN, self.lines[i])
                     if line_data:
+                        debugLog(self.verbose, f"append normal line {i}")
                         sec_list.append({
                             'time': line_data.group(1).replace('.', ':'),
                             'text': line_data.group(2)
@@ -79,6 +85,7 @@ class wordToExcel:
                     #text是多行，会导致改行只有文字，追加多行文字到list末尾的text里
                     elif self.lines[i] != '' and not re.match(TAIL_PATTERN, self.lines[i]):
                         if not sec_list : raise ValueError(f"文件格式错误，缺少必要的时间戳")
+                        debugLog(self.verbose, f"append multi-line {i} to last line in list")
                         sec_list[-1]['text'] += '\n'+self.lines[i]
                         i += 1
                     #如果是尾行，可能有“-timestamp”单独成行，追加到list末尾的时间戳里
