@@ -79,7 +79,7 @@ class wordToExcel:
                     if line_data:
                         debugLog(self.verbose, f"append normal line {i}")
                         sec_list.append({
-                            'time': line_data.group(1).replace('.', ':'),
+                            'time' : re.sub(r'[:：.]', ':', line_data.group(1)),
                             'text': line_data.group(2)
                         })
                     #text是多行，会导致改行只有文字，追加多行文字到list末尾的text里
