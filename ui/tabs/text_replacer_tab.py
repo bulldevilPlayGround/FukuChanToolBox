@@ -18,8 +18,10 @@ class tkTextReplacerTab(tkTabFrame):
         input_file = self.inputFileSelectItem.entry.get("1.0", tk.END).splitlines()[0]
         output_file = self.outPutFileSelectItem.entry.get("1.0", tk.END).splitlines()[0]
         rule_list_file = self.ruleListFileSelectItem.entry.get("1.0", tk.END).splitlines()[0]
-
-        self.replacer.update_files(input_file, output_file, rule_list_file)
-        self.replacer.load_rule_list()
-        self.replacer.replace_words()
-        tk.messagebox.showinfo("完成提示", "替换完成。请查看输出文件: {}".format(output_file))
+        try:
+            self.replacer.update_files(input_file, output_file, rule_list_file)
+            self.replacer.load_rule_list()
+            self.replacer.replace_words()
+            tk.messagebox.showinfo("完成提示", "替换完成🆗。😼请查看输出文件: {}".format(output_file))
+        except Exception as e:
+            tk.messagebox.showerror("错误提示", f"替换失败🆖, 😹错误信息: {str(e)}")
