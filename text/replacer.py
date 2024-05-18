@@ -68,11 +68,12 @@ class TextReplacer:
     def replace_words(self):
         try:
             encoding = self.detect_encoding()
+            encoding = 'utf-8' if encoding == None else encoding
         except Exception as e:
             encoding = 'utf-8'
         try:
             with codecs.open(self.output_file, 'w', encoding='utf-8', errors='ignore') as output:
-                with codecs.open(self.input_file, 'r', encoding=encoding, errors='replace') as input:
+                with codecs.open(self.input_file, 'r', encoding=encoding, errors='surrogateescape') as input:
                     content = input.read()
                     for old_word, new_word in self.rule_list.items():
                         content = content.replace(old_word, new_word)
