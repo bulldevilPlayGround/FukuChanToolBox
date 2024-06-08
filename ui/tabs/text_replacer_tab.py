@@ -6,11 +6,11 @@ from text.replacer import TextReplacer
 class tkTextReplacerTab(tkTabFrame):
     def create_widgets(self):
         self.replacer = TextReplacer()
-        self.inputFileSelectItem = file_items.fileSelectItem(self, "输入文件: ", "浏览")
-        self.outPutFileSelectItem = file_items.fileNameSelectItem(self, "输出文件: ", "浏览")
-        self.ruleListFileSelectItem = file_items.fileSelectItem(self, "规则列表文件: ", "浏览")
+        self.inputFileSelectItem = file_items.fileSelectItem(self, "输入文件📂: ", "浏览🔍")
+        self.outPutFileSelectItem = file_items.fileNameSelectItem(self, "输出文件📂: ", "浏览🔍")
+        self.ruleListFileSelectItem = file_items.fileSelectItem(self, "规则列表文件📂: ", "浏览🔍")
 
-        self.run_button = tk.Button(self, text="运行替换", command=self.run_replacer)
+        self.run_button = tk.Button(self, text="运行替换😺", command=self.run_replacer)
         #使用grid布局，把run_button放在最下面,右对齐
         self.run_button.grid(row=file_items.fileAbstractItem.current_row+1, column=1, padx=5, pady=5, sticky='e')
 
