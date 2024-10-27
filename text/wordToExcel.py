@@ -5,7 +5,7 @@ import re
 EMPTY_LINE_PATTERN = r'^$'
 SECTION_PATTERN_TITLE = r'^[\s\t]*\d+[\s\t]*$'
 TIMESTAMP_PATTERN = r'^((?:\d+[:：\.])?\d{2}[:：\.]\d{2})\s*([\S\s]*)'  #时间戳可能没有小时，只有分钟
-TAIL_PATTERN = r'^-(?:\d+[:：\.])?\d{2}[:：\.]\d{2}$'
+TAIL_PATTERN = r'^-(?:\d+[:：\.])?\d{2}[:：\.]\d{2}\s*$'
 """
 doc_dict format:
 {
@@ -158,13 +158,11 @@ class wordToExcel:
             print(f"{i}: {self.lines[i]}")
             i += 1
 
-# file = '24.4.12.docx'
-# file = '2.24.docx'
 # debugMode = True
-# file = '24.3.7黑衣服.docx'
+# file = '10.9.docx'
 # file = wordToExcel(verbose=debugMode, file=file)
-# # debugLog(file.verbose, f"title is {file.title}")
-# # debugLog(file.verbose, "-----------------")
+# debugLog(file.verbose, f"title is {file.title}")
+# debugLog(file.verbose, "-----------------")
 # file.printTheFile()
 # debugLog(file.verbose, "-----------------")
 # file.doc_dict_to_excel(file.doc_dict, 'result.xlsx')
