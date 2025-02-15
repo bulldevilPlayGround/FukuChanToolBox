@@ -11,8 +11,8 @@ from tkinter import messagebox
 class tkVideoInfoHandleTab(tkTabFrame):
     def create_widgets(self):
         self.videoSplitter = videoSplitter()
-        self.inputInfoFilesSelectItem = file_items.fileSelectItem(self, "输入视频信息文件📂: ", "浏览🔍")
-        self.inputVideoFilesSelectItem = file_items.fileListSelectItem(self, "输入视频文件列表📂: ", "浏览🔍")
+        self.inputInfoFilesSelectItem = file_items.fileSelectItem(self, "输入视频信息文件📄: ", "浏览🔍")
+        self.inputVideoFilesSelectItem = file_items.fileListSelectItem(self, "输入视频文件📽️: ", "浏览🔍")
 
         # 添加圆点勾选器
         self.file_format_var = tk.StringVar(value="word")
@@ -23,7 +23,7 @@ class tkVideoInfoHandleTab(tkTabFrame):
 
         self.label = tk.Label(self, text="😺😺😺")
         self.label.grid(row=file_items.fileAbstractItem.current_row+2, column=0, columnspan=3, padx=5, pady=5)
-        #使用grid��局，把run_button放在最下面,右对齐
+        #使用grid布局，把run_button放在最下面,右对齐
         self.run_button = tk.Button(self, text="运行😺", command=self.run_videoSplitter)
         self.run_button.grid(row=file_items.fileAbstractItem.current_row+3, column=1, padx=5, pady=5, sticky='e')
         self.stop_button = tk.Button(self, text="停止😾", command=self.stop_videoSplitter)
@@ -65,13 +65,17 @@ class tkVideoInfoHandleTab(tkTabFrame):
         elif selected_format == "excel":
             # 处理格式2的逻辑
             self.video_info = videoInfoParserExcel(self.video_info_file)
-            pass
+            if len(self.video_info.videoInfo) != len(self.video_files):
+                raise ValueError(f"视频信息数量{len(self.video_info.videoInfo)}与视频文件数量{len(self.video_files)}不匹配🙀。")
 
         with self.videoSplitter.lock:
             if not self.videoSplitter.running:
                 self.label.config(text="😾开始切割✂️⏳...")
                 self.videoSplitter.running = True
-                threading.Thread(target=self.videoSplitter.split_videos, args=(self.video_files, self.video_info.timestamps, self.video_info.videoTexts)).start()
+                if selected_format == "word":
+                    threading.Thread(target=self.videoSplitter.split_videos, args=(self.video_files, self.video_info.timestamps, self.video_info.videoTexts)).start()
+                elif selected_format == "excel":
+                    threading.Thread(target=self.videoSplitter.split_videos_execl, args=(self.video_files, self.video_info.videoInfo)).start()
             else:
                 self.label.config(text="🙀处理中❌")
         self.check_status()

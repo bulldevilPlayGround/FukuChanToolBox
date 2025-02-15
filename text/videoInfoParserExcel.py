@@ -4,14 +4,24 @@ import string
 # Regular expression patterns
 #时间戳可能没有小时，只有分钟，而且以小时或分钟开头时，可能只有一位数字
 TIMESTAMP_PATTERN = r'^((?:\d{1,2}[:：\.])?\d{1,2}[:：\.]\d{2})\s*([\S\s]*)'
+START_TEXT = "素材段数"
+# videoInfo是一个视频信息的字典，key为视频组别，value包含两个列表
+# 第一个列表时视频起始时间戳列表，第二个列表是视频文本列表
+# 比如：
+# videoInfo = {
+#     "1": [
+#         ["00:00", "04:23", ...],
+#         ["line1", "line2", ...]
+#     ],
+#     "2": ...
+# }
 class videoInfoParserExcel:
     def __init__(self, file, verbose=False):
         self.verbose = verbose
-        self.timestamps = []
-        self.videoTexts = []
+        self.videoInfo = {}
+        self.current_group = None
         self.sheet = self.__load_excel_file__(file)
-        self.__fetch_time_list__(self.sheet)
-        self.__fetch_videoText_list__(self.sheet)
+        self.__fetch_video_info__(self.sheet)
 
     def __load_excel_file__(self, file):
         try:
@@ -25,61 +35,59 @@ class videoInfoParserExcel:
                 print(f"Failed to load {file}: {e}")
             return None
 
-    def __fetch_time_list__(self, sheet):
-        listB = []
-        for row in sheet.iter_rows(min_col=2, max_col=2):
-            for cell in row:
-                if cell.value is not None:
-                    cell_value_str = str(cell.value)
-                    if cell_value_str == "0" or re.match(TIMESTAMP_PATTERN, cell_value_str):
-                        listB.append(cell_value_str)
+    def __refine_timestamp__(self, timestamp: str) -> str:
+        timestamp = re.sub(r'[.,]', ':', timestamp)
 
-        self.timestamps = []
-        current_list = []
-        for item in listB:
-            if item == "0":
-                item = "00:00"
-            elif re.match(r'^\d{1}[:：\.]\d{2}$', item):
-                item = "0" + item
-            item = item.replace('.', ':')
-            if item == "00:00" and current_list:
-                self.timestamps.append(current_list)
-                current_list = []
-            current_list.append(item)
-        if current_list:
-            self.timestamps.append(current_list)
+        # 分割时间戳
+        parts = timestamp.split(':')
+        # 补全小时、分钟、秒钟
+        if len(parts) == 1:
+            hours = '00'
+            minutes = '00'
+            seconds = parts[0].zfill(2)
+        elif len(parts) == 2:
+            hours = '00'
+            minutes = parts[0].zfill(2)
+            seconds = parts[1].zfill(2)
+        else:
+            hours = parts[0].zfill(2)
+            minutes = parts[1].zfill(2)
+            seconds = parts[2].zfill(2)
+        return f"{hours}:{minutes}:{seconds}"
 
-        if self.verbose:
-            print(self.timestamps)
+    def __fetch_video_info__(self, sheet):
+        for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, values_only=True):
+        #如果第一列不为空，且为数字时，视频信息开始，这个不为空的内容为视频组别名称
+            if row[0] is not None and str(row[0]).isdigit():
+                # 把视频组别名称作为key，初始化视频信息字典
+                print(f"视频组 {row[0]}")
+                self.current_group = row[0]
+                self.videoInfo[self.current_group] = [[], []]
+            if self.current_group is None:
+                continue
 
-    def __fetch_videoText_list__(self, sheet):
-        if not self.timestamps:
-            raise ValueError("必须在时间戳解析之后才能解析文本")
-        listE = []
-        invalid_chars = '<>:"/\\|?*'
-        for row in sheet.iter_rows(min_col=5, max_col=5):
-            for cell in row:
-                if cell.value is not None:
-                    corresponding_d_cell = sheet.cell(row=cell.row, column=4).value
-                    if corresponding_d_cell is not None and re.match(r'^[A-Za-z]$', str(corresponding_d_cell)):
-                        first_line = str(cell.value).split('\n')[0]
-                        first_line = ''.join(c for c in first_line if c not in invalid_chars)
-                        listE.append(first_line)
-        index = 0
-        for sublist in self.timestamps:
-            sublist_size = len(sublist)
-            self.videoTexts.append(listE[index:index + sublist_size])
-            index += sublist_size
+        #如果第二列不为空，且为"素材段数"时，视频信息开始，这个不为空的内容为视频组别名称
+            if row[1] is not None:
+                #row[1]为视频起始时间，保存到videoInfo的第一个列表中
+                self.videoInfo[self.current_group][0].append(self.__refine_timestamp__(str(row[1])))
 
-        if self.verbose:
-            print(self.videoTexts)
+            if row[4] is not None:
+                #row[4]为视频文本，保存到videoInfo的第二个列表中
+                self.videoInfo[self.current_group][1].append(row[4])
+
     def __debug_print_video_info__(self):
-        for i in range(len(self.timestamps)):
-            for j in range(len(self.timestamps[i])):
-                print(f"{self.timestamps[i][j]}: {self.videoTexts[i][j]}")
+        for group, info in self.videoInfo.items():
+            print(f"Group: {group}")
+            #如果Timestamps和Texts长度不一致，打印警告
+            if len(info[0]) != len(info[1]):
+                print("Warning: Timestamps and Texts length mismatch")
+            else:
+                for timestamp, text in zip(info[0], info[1]):
+                    print(f"{timestamp}: {text}")
 
 #test
 # debugMode = True
-# input_file= '24.10.26_时间轴.xlsx'
+# input_file= '1月7日时间轴.xlsx'
 # file = videoInfoParserExcel(verbose=debugMode, file=input_file)
+# print(f"len of self.videoInfo: {len(file.videoInfo)}")
 # file.__debug_print_video_info__()

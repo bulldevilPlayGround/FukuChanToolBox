@@ -38,3 +38,13 @@ class videoSplitter(videoHandler):
         with self.lock:
             self.running = False
             self.process = None
+
+    def split_videos_execl(self, input_files, videoInfo):
+        keys = list(videoInfo.keys())
+        for i, filename in enumerate(input_files):
+            if filename and self.atomic_is_running():
+                self.logger.log(LogLevel.DEBUG, f"正在处理第{i+1}个视频文件{filename}")
+                self.split_video(filename, videoInfo[keys[i]][0], videoInfo[keys[i]][1])
+        with self.lock:
+            self.running = False
+            self.process = None
