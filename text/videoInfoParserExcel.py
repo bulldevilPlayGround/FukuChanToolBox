@@ -77,17 +77,17 @@ class videoInfoParserExcel:
 
     def __debug_print_video_info__(self):
         for group, info in self.videoInfo.items():
-            print(f"Group: {group}")
+            print(f"Group: {group}, size: {len(info[0])}")
             #如果Timestamps和Texts长度不一致，打印警告
             if len(info[0]) != len(info[1]):
                 print("Warning: Timestamps and Texts length mismatch")
             else:
-                for timestamp, text in zip(info[0], info[1]):
-                    print(f"{timestamp}: {text}")
+                for index, (timestamp, text) in enumerate(zip(info[0], info[1])):
+                    print(f"{index + 1}. {timestamp}: {text}")
 
 #test
 # debugMode = True
-# input_file= '1月7日时间轴.xlsx'
+# input_file= '2.19时间线.xlsx'
 # file = videoInfoParserExcel(verbose=debugMode, file=input_file)
 # print(f"len of self.videoInfo: {len(file.videoInfo)}")
 # file.__debug_print_video_info__()

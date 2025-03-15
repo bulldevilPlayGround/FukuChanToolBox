@@ -15,7 +15,7 @@ class tkVideoInfoHandleTab(tkTabFrame):
         self.inputVideoFilesSelectItem = file_items.fileListSelectItem(self, "输入视频文件📽️: ", "浏览🔍")
 
         # 添加圆点勾选器
-        self.file_format_var = tk.StringVar(value="word")
+        self.file_format_var = tk.StringVar(value="excel")
         self.format1_radiobutton = tk.Radiobutton(self, text="word格式", variable=self.file_format_var, value="word")
         self.format2_radiobutton = tk.Radiobutton(self, text="excel格式", variable=self.file_format_var, value="excel")
         self.format1_radiobutton.grid(row=file_items.fileAbstractItem.current_row+1, column=0, padx=5, pady=5, sticky='w')
