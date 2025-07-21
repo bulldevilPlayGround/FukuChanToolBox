@@ -8,7 +8,7 @@ class tkTextReplacerTab(tkTabFrame):
         self.replacer = TextReplacer()
         self.inputFileSelectItem = file_items.fileSelectItem(self, "输入文件📂: ", "浏览🔍")
         self.outPutFileSelectItem = file_items.fileNameSelectItem(self, "输出文件📂: ", "浏览🔍")
-        self.ruleListFileSelectItem = file_items.fileSelectItem(self, "规则列表文件📂: ", "浏览🔍")
+        self.ruleListFileSelectItem = file_items.fileSelectItem(self, "规则列表文件📂: ", "浏览🔍", "C:\云蔓\中间稿\云蔓 文稿 替换.xlsx")
 
         self.run_button = tk.Button(self, text="运行替换😺", command=self.run_replacer)
         #使用grid布局，把run_button放在最下面,右对齐

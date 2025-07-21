@@ -33,7 +33,7 @@ def debugLog(flag, *args):
     if flag:
         print(*args)
 
-class wordToExcel:
+class videoInfoParserWord:
     def __init__(self, file, verbose=False):
         self.verbose = verbose
         self.doc_dict = {}
@@ -160,7 +160,7 @@ class wordToExcel:
 
 # debugMode = True
 # file = '10.9.docx'
-# file = wordToExcel(verbose=debugMode, file=file)
+# file = videoInfoParserWord(verbose=debugMode, file=file)
 # debugLog(file.verbose, f"title is {file.title}")
 # debugLog(file.verbose, "-----------------")
 # file.printTheFile()
