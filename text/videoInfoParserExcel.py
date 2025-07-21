@@ -1,6 +1,5 @@
 import openpyxl
 import re
-import string
 # Regular expression patterns
 #时间戳可能没有小时，只有分钟，而且以小时或分钟开头时，可能只有一位数字
 TIMESTAMP_PATTERN = r'^((?:\d{1,2}[:：\.])?\d{1,2}[:：\.]\d{2})\s*([\S\s]*)'
@@ -73,7 +72,7 @@ class videoInfoParserExcel:
 
             if row[4] is not None:
                 #row[4]为视频文本，保存到videoInfo的第二个列表中
-                self.videoInfo[self.current_group][1].append(row[4])
+                self.videoInfo[self.current_group][1].append(str(row[4]).splitlines()[0])
 
     def __debug_print_video_info__(self):
         for group, info in self.videoInfo.items():
@@ -86,8 +85,8 @@ class videoInfoParserExcel:
                     print(f"{index + 1}. {timestamp}: {text}")
 
 #test
-# debugMode = True
-# input_file= '2.19时间线.xlsx'
-# file = videoInfoParserExcel(verbose=debugMode, file=input_file)
-# print(f"len of self.videoInfo: {len(file.videoInfo)}")
-# file.__debug_print_video_info__()
+debugMode = True
+input_file= '12月10日时间轴.xlsx'
+file = videoInfoParserExcel(verbose=debugMode, file=input_file)
+print(f"len of self.videoInfo: {len(file.videoInfo)}")
+file.__debug_print_video_info__()
