@@ -83,10 +83,3 @@ class videoInfoParserExcel:
             else:
                 for index, (timestamp, text) in enumerate(zip(info[0], info[1])):
                     print(f"{index + 1}. {timestamp}: {text}")
-
-#test
-# debugMode = True
-# input_file= '12月10日时间轴.xlsx'
-# file = videoInfoParserExcel(verbose=debugMode, file=input_file)
-# print(f"len of self.videoInfo: {len(file.videoInfo)}")
-# file.__debug_print_video_info__()
