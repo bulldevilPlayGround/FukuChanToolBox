@@ -11,7 +11,7 @@ TEST
 *.log
 *.spec
 *.mp4
-
+*.docx
 build
 dist
 progress.txt
