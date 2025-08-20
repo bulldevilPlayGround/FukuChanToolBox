@@ -1,6 +1,7 @@
 from video.abstract_videoHandle import videoHandler
 from utils.logger import LogLevel
 from utils.naming import add_suffix
+from utils.naming import refine_file_name
 import ffmpeg
 import os
 
@@ -8,6 +9,8 @@ class videoSplitter(videoHandler):
     def split_video(self, filename, timestamps, file_text):
         for i in range(len(timestamps)):
             output_filename = add_suffix(filename, f"_{str(i+1)}_{file_text[i]}")
+            # 确保输出文件名不包含非法字符
+            output_filename = refine_file_name(output_filename)
             if os.path.exists(output_filename): os.remove(output_filename)
             start_time = timestamps[i]
             if i < len(timestamps) - 1:
