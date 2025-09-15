@@ -115,10 +115,30 @@ class videoInfoParserWord:
         debugLog(self.verbose, f"{len(self.timestamps)} timestamps: {self.timestamps}")
 
     def __fetch_videoText_list__(self, doc_dict):
+        # Define invalid characters for filename safety
+        invalid_chars = '<>:"*?|\\/'
+
+        # Initialize the list to store cleaned text segments
         self.videoTexts = []
+
+        # Iterate through each section list in the input dictionary
         for _, sec_list in doc_dict.items():
-            self.videoTexts.append([sec['text'] for sec in sec_list])
+            # Extract and clean text from each section
+            cleaned_texts = [
+                self._clean_text(sec['text'], invalid_chars)
+                for sec in sec_list
+            ]
+            self.videoTexts.append(cleaned_texts)
+
+        # Log the result for debugging
         debugLog(self.verbose, f"{len(self.videoTexts)} videoTexts: {self.videoTexts}")
+
+    def _clean_text(self, text, invalid_chars):
+        """Helper method to replace invalid characters in a text string."""
+        cleaned_text = text
+        for char in invalid_chars:
+            cleaned_text = cleaned_text.replace(char, '_')
+        return cleaned_text
 
     def doc_dict_to_excel(self, doc_dict, output_file='result.xlsx'):
         workbook = openpyxl.Workbook()

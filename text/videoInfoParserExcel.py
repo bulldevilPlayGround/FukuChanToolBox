@@ -72,7 +72,15 @@ class videoInfoParserExcel:
 
             if row[4] is not None:
                 #row[4]为视频文本，保存到videoInfo的第二个列表中
-                self.videoInfo[self.current_group][1].append(str(row[4]).splitlines()[0])
+                lines = str(row[4]).splitlines()
+                #取第一个非空行文字
+                text = next((line for line in lines if line.strip()), "")
+                self.videoInfo[self.current_group][1].append(text)
+        #去除不能作为文件名的字符
+        invalid_chars = r'[<>:"*?|\\/]'
+        for _, info in self.videoInfo.items():
+            if len(info) >= 2 and isinstance(info[1], list):
+                info[1] = [re.sub(invalid_chars, '_', text) for text in info[1]]
 
     def __debug_print_video_info__(self):
         for group, info in self.videoInfo.items():
